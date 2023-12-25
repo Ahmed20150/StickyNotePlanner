@@ -49,23 +49,9 @@ const MainPage= () => {
     function deleteNote() {
       localStorage.setItem('deletedId', id);
       // setDeletedNotes(deletedNotes+1);
-      setUniversalID(universalID-1);
 
       const biggerList= NoteListA.filter(note => note.id > id); //all ids bigger
       const smallerList= NoteListA.filter(note => note.id < id); //all ids smaller
-
-      if(biggerList.length>0){
-        biggerList.map((note)=> note.id=note.id-1);
-        // biggerList.map((note)=> note.id=note.id-(1+deletedNotes));
-      }
-
-      const updatedList = smallerList.concat(biggerList); 
-      setNotes(updatedList); 
-      NoteListA= updatedList;
-
-
-      console.log('bigger:', biggerList);
-      console.log('smaller:', smallerList);
 
       if( (boardA.filter((note) => id === note.id) ).length===1){
 
@@ -86,6 +72,22 @@ const MainPage= () => {
         // boardA= updatedBoard;
 
       }
+
+      if(biggerList.length>0){
+        biggerList.map((note)=> note.id=note.id-1);
+        // biggerList.map((note)=> note.id=note.id-(1+deletedNotes));
+      }
+
+      const updatedList = smallerList.concat(biggerList); 
+      setNotes(updatedList); 
+      NoteListA= updatedList;
+
+      setUniversalID(universalID-1);
+
+
+
+      console.log('bigger:', biggerList);
+      console.log('smaller:', smallerList);
 
       console.log('NoteListA:', NoteListA);
       console.log('NoteListB:', NoteListB);
