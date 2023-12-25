@@ -205,6 +205,7 @@ const MainPage= () => {
       emptyBoard();
       setNotes( initialNotes );
       NoteListA= initialNotes;
+      setUniversalID(1);
 
     }
 
