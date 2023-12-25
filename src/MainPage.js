@@ -57,7 +57,6 @@ const MainPage= () => {
       if(biggerList.length>0){
         biggerList.map((note)=> note.id=note.id-1);
         // biggerList.map((note)=> note.id=note.id-(1+deletedNotes));
-
       }
 
       const updatedList = smallerList.concat(biggerList); 
@@ -71,8 +70,8 @@ const MainPage= () => {
       if( (boardA.filter((note) => id === note.id) ).length===1){
 
         const updatedBoard= boardA.filter(note => note.id !== id);
-        boardA=  boardA.filter(note => note.id !== id);
         setBoard(updatedBoard);
+        boardA=  boardA.filter(note => note.id !== id);
 
         
         // const biggerBoard= boardA.filter(note => note.id > id); //all ids bigger
@@ -91,7 +90,7 @@ const MainPage= () => {
       console.log('NoteListA:', NoteListA);
       console.log('NoteListB:', NoteListB);
       console.log('BoardA:', boardA);
-      console.log('Boardb:', boardB);
+      console.log('BoardB:', boardB);
     }
 
 
@@ -115,9 +114,9 @@ const MainPage= () => {
     }));
     return (  
     <div className="note" id={id} ref={drag} >
-       <button className="deletenote" onClick={deleteNote}><p> X </p> </button>
+       <button className="deletenote" onClick={deleteNote}> X </button>
        <button className="editnote"  onClick={toggleVisibility}>Edit</button>
-       <button className="notebutton"><p> {text} </p> </button>
+       <button className="notebutton"> {text} </button>
     </div>
     );
 }

@@ -99,9 +99,14 @@
     transition: transform 0.3s ease;
     margin-bottom: 10px;
     margin-right: 5px;
+    position: relative;
 }
 .note:hover{
   transform: scale(1.1);
+}
+.note:hover .deletenote,
+.note:hover .editnote {
+  opacity: 1; 
 }
 
 .note:active{
@@ -125,7 +130,8 @@
   display: inline;
   /* border-width: 0.2rem;         */
   background-color: transparent;
-  /* display:none; */
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
 }
 
 .deletenote:hover {
@@ -142,6 +148,8 @@ background-color: lightblue;
   border: none;
   display: inline;
   background-color: transparent;
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
 }
 
 .editnote:hover{
