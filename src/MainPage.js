@@ -8,6 +8,7 @@ import { useDrag } from "react-dnd";
 
 
 //TESTING MAIN BRANCH
+//tst 2
 let NoteListA = [  //Actual List of Notes
   // {
   //   id: 1,
