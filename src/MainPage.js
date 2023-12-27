@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useRef } from 'react';
 import { useState } from "react";
 import { useDrop } from 'react-dnd';
 // import Note from "./Note";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDrag } from "react-dnd";
+import { HotKeys } from 'react-hotkeys';
+
 
 
 
@@ -39,7 +41,11 @@ const MainPage= () => {
   
   let [boardB, setBoard] = useState([]);  //Only the frontend/visual for the board itself
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false); //visibility of edit menu
+  const [isVisible2, setIsVisible2] = useState(false); //visibility of creating a new note menu 
+  const [searchVisible, setSearchVisible] = useState(false); //visibility of search bar 
+
+  const[noteText, setNoteText]= useState(''); //text of the note
 
   
 
@@ -107,6 +113,7 @@ const MainPage= () => {
       }
     };
 
+
     const [{isDragging},drag]= useDrag(()=> ({
         type:"note",
         item: {id: id},
@@ -134,6 +141,11 @@ const MainPage= () => {
         element2.classList.add('swing-in-top-fwd');
         
         document.body.classList.add('home-page');
+
+        const mainpage = document.getElementById('mainpage');
+          if (mainpage) {
+            mainpage.focus();
+          }
         
         return () => {
           element.classList.remove('slide-in-blurred-top');
@@ -172,9 +184,12 @@ const MainPage= () => {
   }; 
 
   function generateNote ()  {
+
+    setIsVisible2(!isVisible2);
+
     const newNote = {
       id: universalID, 
-      text: "T"+(universalID),
+      text: noteText,
     };
 
     setUniversalID(universalID+1);
@@ -249,14 +264,26 @@ const MainPage= () => {
     // setNotes(NoteListA);
   }
 
-  const [inputValue, setInputValue] = useState('');
-  const handleChange = (event) => {    //for changing Note text
+  const [inputValue, setInputValue] = useState(''); //For editing Note Text
+
+  const handleChange = (event) => {    //for changing/editing Note text
     setInputValue(event.target.value);
+  };
+
+  const handleChange2 = (event) => {    //for creating new Note with custom text
+    setNoteText(event.target.value);
   };
 
   const handleEnterKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleTextChange();
+    }
+  };
+
+  const handleEnterKeyPress2 = (event) => {
+    if (event.key === 'Enter') {
+      generateNote();
+      toggleVisibility2();
     }
   };
 
@@ -267,10 +294,39 @@ const MainPage= () => {
     setInputValue('');
     };
 
-    
+    const newNoteShortcut = (event) => {  //shortcut for creating a new note
+      if (event.ctrlKey && event.key === 'q') {
+        event.preventDefault();
+        toggleVisibility2();
+      }
+    };
+
+
+    const toggleVisibility2 = () => {
+      
+      setIsVisible2(!isVisible2);
+
+      if(isVisible2===false){
+        setNoteText('');
+      }
+    };
+
+    const toggleSearchVisibility = () => {
+      
+      setSearchVisible(!searchVisible);
+
+      if(searchVisible===false){
+      setSearchTerm('');
+      const container = document.querySelector('.searchbar');
+      container.classList.remove('slide-in-blurred-right');
+      container.classList.add('slide-in-blurred-left');
+      }
+    };
+
+
 
     return ( 
-    <div className="mainpage">  
+    <div className="mainpage" tabIndex="0" onKeyDown={newNoteShortcut}  >  
 
     <div className='welcometext'>
 
@@ -280,17 +336,44 @@ const MainPage= () => {
       
     </div>
 
-    <div className='menucontainer'>
+    <div className='menucontainer' style={{border: isVisible ? '1px solid #ccc': 'none',   boxShadow:isVisible ? "0 0 10px rgba(0, 0, 0, 0.2)": "none",   backgroundColor: isVisible ? "#fff" : "transparent"}}>
       
       <div className= 'optionsmenu' style={{ display: isVisible ? 'block' : 'none' , margin: '20px 35px 20px 20px'}}>
-            <input type="text" onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} />  
+      
+      
+          <div className='input-container'>
+
+            <h2>Edit Note</h2>
+            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} />  
             <button onClick={handleTextChange}>Change Text</button>
+            <button onClick={() => setIsVisible(!isVisible)}>Cancel</button>
+          </div>
+
 
       </div>
 
     </div>
 
-    <div className='searchbar'>
+    {/* <HotKeys keyMap={{ 'ctrl+n': () => toggleVisibility2 }}> */}
+    <div className='newnotemenucontainer'  style={{border: isVisible2 ? '1px solid #ccc': 'none',   boxShadow:isVisible2 ? "0 0 10px rgba(0, 0, 0, 0.2)": "none",   backgroundColor: isVisible2 ? "#fff" : "transparent"
+}}>
+
+            <div className= 'newnotemenu' style={{ display: isVisible2 ? 'block' : 'none'   }}>
+            <h2>Create New Note</h2>
+
+            <div className='input-container'>
+            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />  
+            <button onClick={generateNote}>Create Note</button>
+            </div>
+            </div>
+
+      </div>
+
+      {/* </HotKeys> */}
+
+    <div className='searchbarcontainer'> 
+    <button onClick={toggleSearchVisibility}>🔍</button>
+    <div className='searchbar' style={{ display: searchVisible ? 'block' : 'none' , margin: '20px 35px 20px 20px'  }}>
     <input
         type="text"
         placeholder="Search..."
@@ -299,6 +382,7 @@ const MainPage= () => {
         onChange={handleSearch}
       />
       <button onClick={clearSearchtext}> Clear</button>
+    </div>
     </div>
 
     
@@ -318,7 +402,7 @@ const MainPage= () => {
       <ToastContainer />
 
       <div className='button'>
-     <button onClick={generateNote}>Add New Note </button>
+     <button onClick={toggleVisibility2}>Add New Note </button>
      <button onClick={emptyBoard}>Empty Board</button>
      <button onClick={resetNotes}>Reset Notes</button>
       </div>
