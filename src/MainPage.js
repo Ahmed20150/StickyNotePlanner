@@ -5,7 +5,9 @@ import { useDrop } from 'react-dnd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDrag } from "react-dnd";
-import { HotKeys } from 'react-hotkeys';
+// import { DndContext, closestCenter } from '@dnd-kit/core';
+// import {arrayMove, SortableContext, horizontalListSortingStrategy} from '@dnd-kit/sortable';
+
 
 
 
@@ -50,7 +52,7 @@ const MainPage= () => {
   
 
 
-  const Note = ({id,text}) => {           //NOTE OBJECT
+  const Note = ({ id, text, index, moveItem }) => {           //NOTE OBJECT
 
     function deleteNote() {
       localStorage.setItem('deletedId', id);
@@ -114,13 +116,22 @@ const MainPage= () => {
     };
 
 
-    const [{isDragging},drag]= useDrag(()=> ({
-        type:"note",
-        item: {id: id},
-        collect: (monitor) => ({
-            isDragging: !!monitor.isDragging(),
-        }),
+    // const [{isDragging},drag]= useDrag(()=> ({
+    //     type:"note",
+    //     item: {id: id},
+    //     collect: (monitor) => ({
+    //         isDragging: !!monitor.isDragging(),
+    //     }),
+    // }));
+
+    const [{ isDragging }, drag] = useDrag(() => ({
+      type: "note",
+      item: { id, index, text },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }));
+    
     return (  
     <div className="note" id={id} ref={drag} >
        <button className="deletenote" onClick={deleteNote}> X </button>
@@ -323,6 +334,120 @@ const MainPage= () => {
       }
     };
 
+    const SortableNoteList = ({ items }) => {
+      // const [sortedItems, setSortedItems] = useState(items);
+    
+      // useEffect(() => {
+      //   setSortedItems(items);
+      // }, [items]);
+    
+      const [, drop] = useDrop(() => ({
+        accept: "note",
+        drop: (item, monitor) => {
+          let dragIndex = item.index;
+          let hoverIndex = 0;
+
+          let note= NoteListA[hoverIndex]; 
+
+
+          console.log("dragIndex:", dragIndex);   
+          console.log("note:", NoteListA[hoverIndex]);
+    
+    
+          if (dragIndex === hoverIndex) {
+            return;
+          }
+          
+
+          // const newlist= NoteListA;
+          // // const newItems = [...NoteListB];
+          // console.log("before NoteListA:", NoteListA);
+          // newlist.splice(hoverIndex, 1 , item);
+          // newlist.splice(dragIndex, 1, note);
+          // console.log("after NoteListA:", NoteListA);
+
+    
+          // setNotes(newlist);
+
+          const newNoteList = NoteListA;
+          const [draggedItem] = newNoteList.splice(dragIndex, 1);
+          const [hoveredItem]=newNoteList.splice(hoverIndex, 1);
+
+          newNoteList.splice(hoverIndex, 0, draggedItem);
+          newNoteList.splice(dragIndex, 0, hoveredItem);
+
+          
+          NoteListA=newNoteList;
+          
+          setNotes([...newNoteList]);
+ 
+          console.log("NoteListB:", NoteListA);
+        },
+      }));
+
+
+      // NoteListA= sortedItems;
+    
+      return (
+        <div ref={drop} className='notelist'>
+          {NoteListB.map((note, index) => (
+            <Note key={note.id} id={note.id} text={note.text} index={index} moveItem={setNotes} />
+          ))}
+        </div>
+      );
+    };
+
+
+    const SortableBoard = ({ items }) => {
+      // const [sortedItems, setSortedItems] = useState(items);
+    
+      // useEffect(() => {
+      //   setSortedItems(items);
+      // }, [items]);
+    
+      const [, drop] = useDrop(() => ({
+        accept: "note",
+        drop: (item, monitor) => {
+          const dragIndex = item.index;
+          const hoverIndex = 0;
+
+          console.log("dragIndex:", dragIndex); 
+
+
+          const note= boardA[hoverIndex]; 
+    
+          if (dragIndex === hoverIndex) {
+            return;
+          }
+
+         console.log("item/dragged note:", item); 
+         console.log("hoveredoveritem:", note);
+         console.log("boardA before anuyth:", boardA);  
+          
+         boardA.splice(hoverIndex, 1 , item);
+         console.log("boardA after 1st slplice:", boardA);  
+          
+
+         boardA.splice(dragIndex, 1, note);
+         console.log("boardA after 2nd slplice:", boardA);  
+
+
+
+        },
+      }));
+
+
+      setBoard(boardA);
+      
+      return (
+        <div ref={drop} className='notelist'>
+          {boardB.map((note, index) => (
+            <Note key={note.id} id={note.id} text={note.text} index={index} moveItem={setBoard} />
+          ))}
+        </div>
+      );
+    };
+
 
 
     return ( 
@@ -364,6 +489,7 @@ const MainPage= () => {
             <div className='input-container'>
             <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />  
             <button onClick={generateNote}>Create Note</button>
+            <button onClick={toggleVisibility2}>Cancel</button>
             </div>
             </div>
 
@@ -387,15 +513,18 @@ const MainPage= () => {
 
     
       <div className='notelist'>
-        {NoteListB.map((note) => {
+        {/* {NoteListB.map((note) => {
           return <Note id={note.id} text={note.text}> </Note>;
-        })}
+        })} */}
+
+        <SortableNoteList />
       </div>
 
       <div className='Board' ref={drop}>
-      {boardB.map((note) => {
+      {/* {boardB.map((note) => {
           return <Note id={note.id} text={note.text} /> ;
-        })}
+        })} */}
+        <SortableBoard />
          
       </div>
       
