@@ -396,8 +396,7 @@ const MainPage= () => {
         </div>
       );
     };
-
-
+    
     const SortableBoard = ({ items }) => {
       // const [sortedItems, setSortedItems] = useState(items);
     
@@ -408,37 +407,50 @@ const MainPage= () => {
       const [, drop] = useDrop(() => ({
         accept: "note",
         drop: (item, monitor) => {
-          const dragIndex = item.index;
-          const hoverIndex = 0;
+          let dragIndex = item.index;
+          let hoverIndex = 0;
 
-          console.log("dragIndex:", dragIndex); 
+          let note= boardA[hoverIndex]; 
 
 
-          const note= boardA[hoverIndex]; 
+          console.log("dragIndex:", dragIndex);   
+          console.log("note:", boardA[hoverIndex]);
+    
     
           if (dragIndex === hoverIndex) {
             return;
           }
-
-         console.log("item/dragged note:", item); 
-         console.log("hoveredoveritem:", note);
-         console.log("boardA before anuyth:", boardA);  
-          
-         boardA.splice(hoverIndex, 1 , item);
-         console.log("boardA after 1st slplice:", boardA);  
           
 
-         boardA.splice(dragIndex, 1, note);
-         console.log("boardA after 2nd slplice:", boardA);  
+          // const newlist= NoteListA;
+          // // const newItems = [...NoteListB];
+          // console.log("before NoteListA:", NoteListA);
+          // newlist.splice(hoverIndex, 1 , item);
+          // newlist.splice(dragIndex, 1, note);
+          // console.log("after NoteListA:", NoteListA);
 
+    
+          // setNotes(newlist);
 
+          const newNoteList = boardA;
+          const [draggedItem] = newNoteList.splice(dragIndex, 1);
+          const [hoveredItem]=newNoteList.splice(hoverIndex, 1);
 
+          newNoteList.splice(hoverIndex, 0, draggedItem);
+          newNoteList.splice(dragIndex, 0, hoveredItem);
+
+          
+          boardA=newNoteList;
+          
+          setBoard([...newNoteList]);
+ 
+          console.log("boardA:", boardA);
         },
       }));
 
 
-      setBoard(boardA);
-      
+      // NoteListA= sortedItems;
+    
       return (
         <div ref={drop} className='notelist'>
           {boardB.map((note, index) => (
