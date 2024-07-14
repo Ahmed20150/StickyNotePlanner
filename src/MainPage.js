@@ -33,6 +33,7 @@ let boardA = [];  //Actual List for the Board
 const MainPage= () => {
 
   let[universalID,setUniversalID] = useState(1);
+  let[universalScore,setUniversalScore] = useState(0);
   // let[deletedNotes, setDeletedNotes]= useState(0);
   
   let [NoteListB, setNotes] = useState([  //Only the frontend/visual for the Note itself
@@ -48,11 +49,12 @@ const MainPage= () => {
   const [searchVisible, setSearchVisible] = useState(false); //visibility of search bar 
 
   const[noteText, setNoteText]= useState(''); //text of the note
+  const[noteScore, setNoteScore]= useState(0); //score of the note
 
   
 
 
-  const Note = ({ id, text, index, moveItem }) => {           //NOTE OBJECT
+  const Note = ({ id, text, index, score }) => {           //NOTE OBJECT
 
     function deleteNote() {
       localStorage.setItem('deletedId', id);
@@ -115,6 +117,13 @@ const MainPage= () => {
       }
     };
 
+    const updateScore = () => {
+   let note =  NoteListA.find(note => note.id === id);
+   let noteScore = parseInt(note.score);
+   setUniversalScore(universalScore + noteScore);
+   deleteNote();
+    };
+
 
 
 const ref = useRef(null);
@@ -162,6 +171,7 @@ console.log("NEW BOARD LIST:", boardA);
     <div className="note" id={id} ref={ref} >
        <button className="deletenote" onClick={deleteNote}> X </button>
        <button className="editnote"  onClick={toggleVisibility}>Edit</button>
+       <button className="donenote"  onClick={updateScore}>✔</button>
        <button className="notebutton"> {text} </button>
     </div>
     );
@@ -223,15 +233,17 @@ console.log("NEW BOARD LIST:", boardA);
   function generateNote ()  {
 
     setIsVisible2(!isVisible2);
-
+    const currentScore = noteScore === '' ? 0 : noteScore;
     const newNote = {
       id: universalID, 
       text: noteText,
+      score: currentScore,
     };
 
     setUniversalID(universalID+1);
         
     setNotes([...NoteListB, newNote]);
+
 
   
     NoteListA.push(newNote);
@@ -302,18 +314,27 @@ console.log("NEW BOARD LIST:", boardA);
   }
 
   const [inputValue, setInputValue] = useState(''); //For editing Note Text
+  const [inputScore, setInputScore] = useState(''); //For editing Note Score
 
   const handleChange = (event) => {    //for changing/editing Note text
     setInputValue(event.target.value);
+  };
+
+  const handleChange3 = (event) => {    //for changing/editing Note Score
+    setInputScore(event.target.value);
   };
 
   const handleChange2 = (event) => {    //for creating new Note with custom text
     setNoteText(event.target.value);
   };
 
+  const handleScoreChange = (event) => {    //for creating new Note with custom text
+    setNoteScore(event.target.value);
+  };
+
   const handleEnterKeyPress = (event) => {
     if (event.key === 'Enter') {
-      handleTextChange();
+      handleText_ScoreChange();
     }
   };
 
@@ -324,11 +345,15 @@ console.log("NEW BOARD LIST:", boardA);
     }
   };
 
-  const handleTextChange = () => {
+  const handleText_ScoreChange = () => {
+    if(inputValue!==''){
     NoteListA[localStorage.getItem('clickedid') - 1].text = inputValue;
+    }
+    NoteListA[localStorage.getItem('clickedid') - 1].score = inputScore;
     setNotes(NoteListA); 
     setIsVisible(!isVisible);
     setInputValue('');
+    setInputScore('');
     };
 
     const newNoteShortcut = (event) => {  //shortcut for creating a new note
@@ -345,6 +370,7 @@ console.log("NEW BOARD LIST:", boardA);
 
       if(isVisible2===false){
         setNoteText('');
+        setNoteScore('');
       }
     };
 
@@ -474,6 +500,7 @@ console.log("NEW BOARD LIST:", boardA);
 
       <h1>Welcome!</h1>
       <h2>Arrange your sticky notes!</h2>
+      <h2>Total Score : {universalScore}</h2>
       <h3>{localStorage.getItem("notification")}</h3>
       
     </div>
@@ -486,8 +513,9 @@ console.log("NEW BOARD LIST:", boardA);
           <div className='input-container'>
 
             <h2>Edit Note</h2>
-            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} />  
-            <button onClick={handleTextChange}>Change Text</button>
+            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} /> 
+            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Score' value={inputScore} onChange={handleChange3} />  
+            <button onClick={handleText_ScoreChange}>Change</button>
             <button onClick={() => setIsVisible(!isVisible)}>Cancel</button>
           </div>
 
@@ -504,7 +532,8 @@ console.log("NEW BOARD LIST:", boardA);
             <h2>Create New Note</h2>
 
             <div className='input-container'>
-            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />  
+            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />
+            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Score' value={noteScore} onChange={handleScoreChange} />
             <button onClick={generateNote}>Create Note</button>
             <button onClick={toggleVisibility2}>Cancel</button>
             </div>

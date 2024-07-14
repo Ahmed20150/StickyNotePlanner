@@ -3,17 +3,16 @@
   align-items: center;
 }
 
-.mainpage{
-  display:flex;
+.mainpage {
+  display: flex;
   justify-content: space;
   align-items: center;
   flex-direction: column;
   gap: 15px;
-
 }
 
 .welcometext.slide-in-blurred-top {
-	animation: slide-in-blurred-top 0.8s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+  animation: slide-in-blurred-top 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 @keyframes slide-in-blurred-top {
   0% {
@@ -30,7 +29,7 @@
   }
 }
 .Board {
-  display:flex;
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -43,46 +42,46 @@
 }
 
 .Board.swing-in-top-fwd {
-	-webkit-animation: swing-in-top-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
-	        animation: swing-in-top-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+  -webkit-animation: swing-in-top-fwd 0.5s
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  animation: swing-in-top-fwd 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
- @-webkit-keyframes swing-in-top-fwd {
+@-webkit-keyframes swing-in-top-fwd {
   0% {
     -webkit-transform: rotateX(-100deg);
-            transform: rotateX(-100deg);
+    transform: rotateX(-100deg);
     -webkit-transform-origin: top;
-            transform-origin: top;
+    transform-origin: top;
     opacity: 0;
   }
   100% {
     -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
+    transform: rotateX(0deg);
     -webkit-transform-origin: top;
-            transform-origin: top;
+    transform-origin: top;
     opacity: 1;
   }
 }
 @keyframes swing-in-top-fwd {
   0% {
     -webkit-transform: rotateX(-100deg);
-            transform: rotateX(-100deg);
+    transform: rotateX(-100deg);
     -webkit-transform-origin: top;
-            transform-origin: top;
+    transform-origin: top;
     opacity: 0;
   }
   100% {
     -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
+    transform: rotateX(0deg);
     -webkit-transform-origin: top;
-            transform-origin: top;
+    transform-origin: top;
     opacity: 1;
   }
 }
 
-
-.notelist{
-  display:flex;
+.notelist {
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -90,40 +89,41 @@
   margin-bottom: 10px;
 }
 
-.note{
-    cursor:grab;
-    border: 2px solid #000; /* You can adjust the border width and color */
-    width: 100px;          /* Set the width of the square */
-    height: 100px;         /* Set the height of the square */
-    background-color: rgb(255, 255, 110);
-    transition: transform 0.3s ease;
-    margin-bottom: 10px;
-    margin-right: 5px;
-    position: relative;
-    word-wrap: break-word;
+.note {
+  cursor: grab;
+  border: 2px solid #000; /* You can adjust the border width and color */
+  width: 100px; /* Set the width of the square */
+  height: 100px; /* Set the height of the square */
+  background-color: rgb(255, 255, 110);
+  transition: transform 0.3s ease;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  position: relative;
+  word-wrap: break-word;
 }
-.note:hover{
+.note:hover {
   transform: scale(1.1);
 }
 .note:hover .deletenote,
-.note:hover .editnote {
-  opacity: 1; 
+.note:hover .editnote,
+.note:hover .donenote {
+  opacity: 1;
 }
 
-.note:active{
-  cursor:grabbing;
+.note:active {
+  cursor: grabbing;
 }
 
-.notebutton{
-  width: 99px;          
-  height: 99px; 
-  border: none;        
+.notebutton {
+  width: 99px;
+  height: 99px;
+  border: none;
   background-color: transparent;
 }
 
-.deletenote{
+.deletenote {
   position: absolute;
-  top: 0;
+  bottom: 0;
   right: 0;
   padding: 10px;
   font-size: 10px;
@@ -131,16 +131,16 @@
   display: inline;
   /* border-width: 0.2rem;         */
   background-color: transparent;
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .deletenote:hover {
   /* display: block; */
-background-color: lightblue;
+  background-color: lightblue;
 }
 
-.editnote{
+.editnote {
   position: absolute;
   top: 0;
   left: 0;
@@ -149,23 +149,37 @@ background-color: lightblue;
   border: none;
   display: inline;
   background-color: transparent;
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.editnote:hover{
+.editnote:hover {
   background-color: lightblue;
-  }
-  
+}
 
+.donenote {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  font-size: 10px;
+  border: none;
+  display: inline;
+  background-color: transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
-.button{
-  display:flex;
+.donenote:hover {
+  background-color: lightblue;
+}
+
+.button {
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 15px;  
+  gap: 15px;
 }
-
 
 .menucontainer,
 .newnotemenucontainer {
@@ -178,12 +192,12 @@ background-color: lightblue;
   flex-direction: column;
   /* border: 1px solid #ccc;  */
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);  */
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .optionsmenu,
-.newnotemenu{
-  display:flex;
+.newnotemenu {
+  display: flex;
   flex-direction: column;
   gap: 10px;
 }
@@ -194,54 +208,54 @@ background-color: lightblue;
   gap: 10px;
 }
 
-.searchbarcontainer{
-  display:flex;
+.searchbarcontainer {
+  display: flex;
   flex-direction: column;
 }
 
-
-.searchbar{
-	-webkit-animation: slide-in-blurred-right 0.6s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
-	        animation: slide-in-blurred-right 0.6s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+.searchbar {
+  -webkit-animation: slide-in-blurred-right 0.6s cubic-bezier(0.23, 1, 0.32, 1)
+    both;
+  animation: slide-in-blurred-right 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 @-webkit-keyframes slide-in-blurred-right {
   0% {
     -webkit-transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
-            transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
+    transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
     -webkit-transform-origin: 0% 50%;
-            transform-origin: 0% 50%;
+    transform-origin: 0% 50%;
     -webkit-filter: blur(40px);
-            filter: blur(40px);
+    filter: blur(40px);
     opacity: 0;
   }
   100% {
     -webkit-transform: translateX(0) scaleY(1) scaleX(1);
-            transform: translateX(0) scaleY(1) scaleX(1);
+    transform: translateX(0) scaleY(1) scaleX(1);
     -webkit-transform-origin: 50% 50%;
-            transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
     -webkit-filter: blur(0);
-            filter: blur(0);
+    filter: blur(0);
     opacity: 1;
   }
 }
 @keyframes slide-in-blurred-right {
   0% {
     -webkit-transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
-            transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
+    transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
     -webkit-transform-origin: 0% 50%;
-            transform-origin: 0% 50%;
+    transform-origin: 0% 50%;
     -webkit-filter: blur(40px);
-            filter: blur(40px);
+    filter: blur(40px);
     opacity: 0;
   }
   100% {
     -webkit-transform: translateX(0) scaleY(1) scaleX(1);
-            transform: translateX(0) scaleY(1) scaleX(1);
+    transform: translateX(0) scaleY(1) scaleX(1);
     -webkit-transform-origin: 50% 50%;
-            transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
     -webkit-filter: blur(0);
-            filter: blur(0);
+    filter: blur(0);
     opacity: 1;
   }
 }
