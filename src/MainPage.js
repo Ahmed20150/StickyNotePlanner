@@ -116,24 +116,50 @@ const MainPage= () => {
     };
 
 
-    // const [{isDragging},drag]= useDrag(()=> ({
-    //     type:"note",
-    //     item: {id: id},
-    //     collect: (monitor) => ({
-    //         isDragging: !!monitor.isDragging(),
-    //     }),
-    // }));
+
+const ref = useRef(null);
 
     const [{ isDragging }, drag] = useDrag(() => ({
       type: "note",
       item: { id, index, text },
       collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
+        isDragging: !!monitor.isDragging(),
       }),
     }));
+
+    const [, drop] = useDrop(() => ({
+      accept: 'note',
+      drop: (item, monitor) => {
+        const dragId = item.id; // ID of the dragged note
+        const hoverId = id; // ID of the current note (drop target)
+
+        console.log(`Dragged note ID: ${dragId}, Target note ID: ${hoverId}`);
+    
+        //BOARD DRAGBAILITY
+        const dragIndex = boardA.findIndex(note => note.id === dragId);
+        const hoverIndex = boardA.findIndex(note => note.id === hoverId);
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+        
+const newNoteList = [...boardA];
+
+
+const temp = newNoteList[dragIndex];
+newNoteList[dragIndex] = newNoteList[hoverIndex];
+newNoteList[hoverIndex] = temp;
+
+boardA = newNoteList;
+setBoard(newNoteList);
+
+console.log("NEW BOARD LIST:", boardA);
+      },
+    }));
+
+    drag(drop(ref));
     
     return (  
-    <div className="note" id={id} ref={drag} >
+    <div className="note" id={id} ref={ref} >
        <button className="deletenote" onClick={deleteNote}> X </button>
        <button className="editnote"  onClick={toggleVisibility}>Edit</button>
        <button className="notebutton"> {text} </button>
@@ -183,7 +209,7 @@ const MainPage= () => {
 
       const noteTobeAdded = NoteListA.filter((note) => id === note.id);
       if(boardA.includes(noteTobeAdded[0])){
-        duplicateNoteMessage();
+        // duplicateNoteMessage();
       }
       else{
         boardA.push(noteTobeAdded[0]);  //EDIT : WAS NOTETOBEADDED[0]
@@ -237,7 +263,7 @@ const MainPage= () => {
 
     }
 
-    const duplicateNoteMessage = () => toast("Note already exists in board");
+    // const duplicateNoteMessage = () => toast("Note already exists in board");
 
     const DraggableList = ({ notes }) => {
       const [listItems, setListItems] = useState(notes);
@@ -345,13 +371,12 @@ const MainPage= () => {
         accept: "note",
         drop: (item, monitor) => {
           let dragIndex = item.index;
-          let hoverIndex = 0;
+          let hoverIndex = monitor.getItem();
 
-          let note= NoteListA[hoverIndex]; 
 
 
           console.log("dragIndex:", dragIndex);   
-          console.log("note:", NoteListA[hoverIndex]);
+          console.log("hoveIndex:", hoverIndex);
     
     
           if (dragIndex === hoverIndex) {
@@ -369,17 +394,7 @@ const MainPage= () => {
     
           // setNotes(newlist);
 
-          const newNoteList = NoteListA;
-          const [draggedItem] = newNoteList.splice(dragIndex, 1);
-          const [hoveredItem]=newNoteList.splice(hoverIndex, 1);
-
-          newNoteList.splice(hoverIndex, 0, draggedItem);
-          newNoteList.splice(dragIndex, 0, hoveredItem);
-
-          
-          NoteListA=newNoteList;
-          
-          setNotes([...newNoteList]);
+        
  
           console.log("NoteListB:", NoteListA);
         },
@@ -408,13 +423,12 @@ const MainPage= () => {
         accept: "note",
         drop: (item, monitor) => {
           let dragIndex = item.index;
-          let hoverIndex = 0;
+          let hoverIndex = monitor.getItem();
 
-          let note= boardA[hoverIndex]; 
 
 
           console.log("dragIndex:", dragIndex);   
-          console.log("note:", boardA[hoverIndex]);
+          console.log("hoveIndex:", hoverIndex);
     
     
           if (dragIndex === hoverIndex) {
@@ -432,21 +446,12 @@ const MainPage= () => {
     
           // setNotes(newlist);
 
-          const newNoteList = boardA;
-          const [draggedItem] = newNoteList.splice(dragIndex, 1);
-          const [hoveredItem]=newNoteList.splice(hoverIndex, 1);
-
-          newNoteList.splice(hoverIndex, 0, draggedItem);
-          newNoteList.splice(dragIndex, 0, hoveredItem);
-
-          
-          boardA=newNoteList;
-          
-          setBoard([...newNoteList]);
+        
  
-          console.log("boardA:", boardA);
+          console.log("BoardA:", boardA);
         },
       }));
+
 
 
       // NoteListA= sortedItems;
