@@ -5,6 +5,7 @@ import { useDrop } from 'react-dnd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDrag } from "react-dnd";
+import html2canvas from 'html2canvas';
 // import { DndContext, closestCenter } from '@dnd-kit/core';
 // import {arrayMove, SortableContext, horizontalListSortingStrategy} from '@dnd-kit/sortable';
 
@@ -34,6 +35,7 @@ const MainPage= () => {
 
   let[universalID,setUniversalID] = useState(1);
   let[universalScore,setUniversalScore] = useState(0);
+  let[universalGoal,setUniversalGoal] = useState(0);
   // let[deletedNotes, setDeletedNotes]= useState(0);
   
   let [NoteListB, setNotes] = useState([  //Only the frontend/visual for the Note itself
@@ -45,14 +47,27 @@ const MainPage= () => {
   let [boardB, setBoard] = useState([]);  //Only the frontend/visual for the board itself
 
   const [isVisible, setIsVisible] = useState(false); //visibility of edit menu
-  const [isVisible2, setIsVisible2] = useState(false); //visibility of creating a new note menu 
+  const [isVisible2, setIsVisible2] = useState(false); //visibility of creating a new note menu
+  const [isVisible3, setIsVisible3] = useState(false); //visibility of Milestone menu  
   const [searchVisible, setSearchVisible] = useState(false); //visibility of search bar 
 
   const[noteText, setNoteText]= useState(''); //text of the note
   const[noteScore, setNoteScore]= useState(0); //score of the note
 
   
+   const  handleDownloadImage = async () => {
+    const element = document.getElementById('board'),
+    canvas = await html2canvas(element),
+    data = canvas.toDataURL('image/jpg'),
+    link = document.createElement('a');
 
+    link.href = data;
+    link.download = 'Your-Board.jpg';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const Note = ({ id, text, index, score }) => {           //NOTE OBJECT
 
@@ -122,6 +137,10 @@ const MainPage= () => {
    let noteScore = parseInt(note.score);
    setUniversalScore(universalScore + noteScore);
    deleteNote();
+   if(universalScore>=universalGoal){
+      toast.success("Congratulations! You have reached your goal!");
+      console.log("CONGRATS");
+   }
     };
 
 
@@ -314,18 +333,24 @@ console.log("NEW BOARD LIST:", boardA);
   }
 
   const [inputValue, setInputValue] = useState(''); //For editing Note Text
-  const [inputScore, setInputScore] = useState(''); //For editing Note Score
+  const [inputScore, setInputScore] = useState(0); //For editing Note Score
 
   const handleChange = (event) => {    //for changing/editing Note text
     setInputValue(event.target.value);
   };
 
   const handleChange3 = (event) => {    //for changing/editing Note Score
+    if(event.target.value!==''){
     setInputScore(event.target.value);
+  }
   };
 
   const handleChange2 = (event) => {    //for creating new Note with custom text
     setNoteText(event.target.value);
+  };
+
+  const handleChange4 = (event) => {    //for editing milestone score
+    setUniversalGoal(event.target.value);
   };
 
   const handleScoreChange = (event) => {    //for creating new Note with custom text
@@ -374,24 +399,34 @@ console.log("NEW BOARD LIST:", boardA);
       }
     };
 
-    const toggleSearchVisibility = () => {
+    const toggleVisibility3 = () => {
       
-      setSearchVisible(!searchVisible);
+      setIsVisible3(!isVisible3);
+      setUniversalGoal(0);
 
-      if(searchVisible===false){
-      setSearchTerm('');
-      const container = document.querySelector('.searchbar');
-      container.classList.remove('slide-in-blurred-right');
-      container.classList.add('slide-in-blurred-left');
+      if(isVisible3===false){
+        setNoteText('');
+        setNoteScore('');
       }
     };
 
+    const saveMilestone = () => {
+      
+      setIsVisible3(!isVisible3);
+
+      if(isVisible3===false){
+        setNoteText('');
+        setNoteScore('');
+      }
+    };
+
+    const toggleSearch = () => setSearchVisible(!searchVisible);
+
+
+
+
     const SortableNoteList = ({ items }) => {
-      // const [sortedItems, setSortedItems] = useState(items);
-    
-      // useEffect(() => {
-      //   setSortedItems(items);
-      // }, [items]);
+
     
       const [, drop] = useDrop(() => ({
         accept: "note",
@@ -409,17 +444,6 @@ console.log("NEW BOARD LIST:", boardA);
             return;
           }
           
-
-          // const newlist= NoteListA;
-          // // const newItems = [...NoteListB];
-          // console.log("before NoteListA:", NoteListA);
-          // newlist.splice(hoverIndex, 1 , item);
-          // newlist.splice(dragIndex, 1, note);
-          // console.log("after NoteListA:", NoteListA);
-
-    
-          // setNotes(newlist);
-
         
  
           console.log("NoteListB:", NoteListA);
@@ -491,34 +515,63 @@ console.log("NEW BOARD LIST:", boardA);
       );
     };
 
-
+    useEffect(() => {
+      if (universalScore >= universalGoal && universalGoal!=0) {
+        toast.success("Congratulations! You have reached your goal!");
+        console.log("CONGRATS");
+      }
+    }, [universalScore, universalGoal]);
 
     return ( 
     <div className="mainpage" tabIndex="0" onKeyDown={newNoteShortcut}  >  
 
     <div className='welcometext'>
+      <ToastContainer/>
+
+      
+
 
       <h1>Welcome!</h1>
       <h2>Arrange your sticky notes!</h2>
-      <h2>Total Score : {universalScore}</h2>
       <h3>{localStorage.getItem("notification")}</h3>
       
     </div>
 
+    <div className='scoreText'>
+    <h2> Your Score : {universalScore}</h2>
+    <h2>Your Goal : {universalGoal}</h2>
+    </div>
+
     <div className='menucontainer' style={{border: isVisible ? '1px solid #ccc': 'none',   boxShadow:isVisible ? "0 0 10px rgba(0, 0, 0, 0.2)": "none",   backgroundColor: isVisible ? "#fff" : "transparent"}}>
       
-      <div className= 'optionsmenu' style={{ display: isVisible ? 'block' : 'none' , margin: '20px 35px 20px 20px'}}>
+    <div className= 'card' style={{ display: isVisible ? 'block' : 'none'   }}>
       
       
           <div className='input-container'>
 
-            <h2>Edit Note</h2>
-            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} /> 
-            <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Score' value={inputScore} onChange={handleChange3} />  
-            <button onClick={handleText_ScoreChange}>Change</button>
-            <button onClick={() => setIsVisible(!isVisible)}>Cancel</button>
+            <h2 style={{ marginLeft: "50px"}}>Edit Your Note</h2>
+
+            <div className='input-container'>
+            <div class="inputBox">
+            <span>Note Text :</span>
+            <input id="newnoteinput" type="text" onKeyDown={handleEnterKeyPress} placeholder="Write here..." value={inputValue} onChange={handleChange} required="" />
+            </div>
+            </div>
+
+            <div className='input-container'>
+            <div class="inputBox">
+            <span>Note Score :</span>
+            <input id="newnoteinput" type="text" onKeyDown={handleEnterKeyPress} placeholder="Write here..." value={inputScore} onChange={handleChange3} required="" />
+            </div>
+            </div>
+
+            {/* <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Text' value={inputValue} onChange={handleChange} />  */}
+            {/* <input type="text" autoFocus onKeyDown={handleEnterKeyPress} placeholder='Note Score' value={inputScore} onChange={handleChange3} />   */}
+            <button className='card__button' onClick={handleText_ScoreChange}>Change</button>
+            <button className='card__button' onClick={() => setIsVisible(!isVisible)}>Cancel</button>
           </div>
 
+          
 
       </div>
 
@@ -528,23 +581,61 @@ console.log("NEW BOARD LIST:", boardA);
     <div className='newnotemenucontainer'  style={{border: isVisible2 ? '1px solid #ccc': 'none',   boxShadow:isVisible2 ? "0 0 10px rgba(0, 0, 0, 0.2)": "none",   backgroundColor: isVisible2 ? "#fff" : "transparent"
 }}>
 
-            <div className= 'newnotemenu' style={{ display: isVisible2 ? 'block' : 'none'   }}>
+            <div className= 'card' style={{ display: isVisible2 ? 'block' : 'none'   }}>
             <h2>Create New Note</h2>
 
             <div className='input-container'>
-            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />
+            <div class="inputBox">
+            <span>Note Text :</span>
+            <input id="newnoteinput" type="text" onKeyDown={handleEnterKeyPress2} placeholder="Write here..." value={noteText} onChange={handleChange2} required="" />
+            </div>
+            <div class="inputBox">
+            <span>Note Score :</span>
             <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Score' value={noteScore} onChange={handleScoreChange} />
-            <button onClick={generateNote}>Create Note</button>
-            <button onClick={toggleVisibility2}>Cancel</button>
+            </div>
+            {/* <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Text' value={noteText} onChange={handleChange2} />
+            <input id="newnoteinput"type="text" onKeyDown={handleEnterKeyPress2} placeholder='Note Score' value={noteScore} onChange={handleScoreChange} /> */}
+            <button onClick={generateNote} className='card__button'>Create Note</button>
+            <button onClick={toggleVisibility2} className='card__button'>Cancel</button>
+            </div>
+            </div>
+
+      </div>
+
+      <div className='newnotemenucontainer'  style={{border: isVisible3 ? '1px solid #ccc': 'none',   boxShadow:isVisible3 ? "0 0 10px rgba(0, 0, 0, 0.2)": "none",   backgroundColor: isVisible3 ? "#fff" : "transparent"
+}}>
+
+            <div className= 'card' style={{ display: isVisible3 ? 'block' : 'none'   }}>
+            <h2>Edit your Milestone</h2>
+
+            <div className='input-container'>
+            <div class="inputBox">
+            <span>Milestone Score :</span>
+            <input id="newnoteinput" type="text" onKeyDown={handleEnterKeyPress2} placeholder="Write here..." value={universalGoal} onChange={handleChange4} required="" />
+            </div>
+            <button onClick={saveMilestone} className='card__button'>Save Milestone</button>
+            <button onClick={toggleVisibility3} className='card__button'>Cancel</button>
             </div>
             </div>
 
       </div>
 
       {/* </HotKeys> */}
-
     <div className='searchbarcontainer'> 
-    <button onClick={toggleSearchVisibility}>🔍</button>
+    <button onClick={toggleVisibility3} className="menuButton">Edit Milestone</button>
+    <button onClick={toggleSearch} className="menuButton">🔍</button>
+ 
+
+    <div class="input-container" style={{ display: searchVisible ? 'block' : 'none'}}>
+  <input type="text" name="text" class="input" placeholder="Search..." id="search"
+        value={searchTerm}
+        onChange={handleSearch} style={{ display: searchVisible ? 'block' : 'none'}}  />
+  <span class="icon" > 
+    <svg width="19px" height="19px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="1" d="M14 5H20" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path opacity="1" d="M14 8H17" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M21 11.5C21 16.75 16.75 21 11.5 21C6.25 21 2 16.75 2 11.5C2 6.25 6.25 2 11.5 2" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path> <path opacity="1" d="M22 22L20 20" stroke="#000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+  </span>
+</div>
+
+{/* 
     <div className='searchbar' style={{ display: searchVisible ? 'block' : 'none' , margin: '20px 35px 20px 20px'  }}>
     <input
         type="text"
@@ -554,7 +645,11 @@ console.log("NEW BOARD LIST:", boardA);
         onChange={handleSearch}
       />
       <button onClick={clearSearchtext}> Clear</button>
-    </div>
+    </div> */}
+
+
+
+
     </div>
 
     
@@ -566,7 +661,7 @@ console.log("NEW BOARD LIST:", boardA);
         <SortableNoteList />
       </div>
 
-      <div className='Board' ref={drop}>
+      <div className='Board' ref={drop} id="board">
       {/* {boardB.map((note) => {
           return <Note id={note.id} text={note.text} /> ;
         })} */}
@@ -574,12 +669,13 @@ console.log("NEW BOARD LIST:", boardA);
          
       </div>
       
-      <ToastContainer />
+
 
       <div className='button'>
-     <button onClick={toggleVisibility2}>Add New Note </button>
-     <button onClick={emptyBoard}>Empty Board</button>
-     <button onClick={resetNotes}>Reset Notes</button>
+     <button onClick={toggleVisibility2} className='menuButton'>New Note </button>
+     <button onClick={emptyBoard} className='menuButton'>Empty Board</button>
+     <button onClick={resetNotes} className='menuButton'>Reset Notes</button>
+     <button onClick={handleDownloadImage} className='menuButton'>Download Board</button>
       </div>
 
     </div>  
